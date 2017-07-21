@@ -24,47 +24,69 @@ class Experiment(object):
 #            curr_obs_trial.inference()
             curr_exp_trial.save()
             curr_obs_trial.save()
+#     def save(self):
+#     def parallel_launch(self):
 
 # Corresponds to single trial
 class ExpTrial(object):
-    def __init__(self, expt):
+    def __init__(self, expt, h, duration, stim_noise, trial_number, 
+                 init_state, end_state):
+        self.true_h = h
+        self.duration = duration
+        self.stim_noise = stim_noise
+        self.trial_number = trial_number
+        self.init_state = init_state
+        self.end_state = end_state
+        self.cp_times = gen_cp(self.duration, self.true_h)
         self.expt = expt
-        self.stim = np.ones(self.expt.setof_trial_dur)
+        self.tot_trial = self.expt.tot_trial
 
-    def save(self):
-        print('stimulus is:')
-        print(self.stim)
+#    def save(self):
+#        print('stimulus is:')
+#        print(self.stim)
 
+#    def gen_cp(self, duration, true_h):
 
-#class Stimulus(object):
-#    def __init__(self, exp_trial):
-#        self.exp_trial = exp_trial
-
+class Stimulus(object):
+    def __init__(self, exp_trial):
+        self.stim = self.gen_stim()
+        self.exp_trial = exp_trial
+        self.trial_number = self.exp_trial.trial_number
+    
+    def gen_stim(self):
+        return np.ones(self.expt.setof_trial_dur)
 # Level 2
 class IdealObs(object):
     def __init__(self, dt, expt, prior_states=np.array([.5, .5]),
                  prior_h=np.array([1, 1])):
-        self.expt = expt  # reference to Experiment object
-        self.obs_noise = self.expt.setof_stim_noise
         self.prior_h = prior_h
         self.dt = dt  # in msec
         # TODO: check that dt divides all possible trial
         self.prior_states = prior_states
-        # durations set in the Experiment
-
+        self.expt = expt  # reference to Experiment object
+        self.obs_noise = self.expt.setof_stim_noise
 
 class ObsTrial(object):
-    def __init__(self, exp_trial, observer):
+    def __init__(self, observer, exp_trial, stimulus):
+        self.llr = []
+        self.decision = 0
         self.exp_trial = exp_trial
+        self.obs_noise = self.exp_trial.stim_noise
+        self.trial_number = self.exp_trial.trial_number
+        self.obs = self.gen_obs()
         self.observer = observer
-        self.observations = np.ones(self.exp_trial.expt.setof_trial_dur)
+        self.stimulus = stimulus
+        
+    def gen_obs():
+        return self.stimulus.stim
+        
+    def infer(self):
+        self.llr = np.ones(self.exp_trial.duration)
+        self.decision = 1
 
-#    def inference(self):
-#        return self.observations
-
-    def save(self):
-        print('observations are:')
-        print(self.observations)
+#    def save(self):
+#        print('observations are:')
+#        print(self.observations)
 
 # Test code
 #1.
