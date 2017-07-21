@@ -18,8 +18,14 @@ class Experiment(object):
         self.results = []
 
     def launch(self, observer):
-        for trial_idx in range(self.trial_number):
-            curr_exp_trial = ExpTrial(self)
+        for trial_idx in range(self.tot_trial):
+            h = 1
+            duration = self.setof_trial_dur
+            stim_noise = self.setof_stim_noise
+            trial_number = trial_idx
+            init_state = self.states[0]
+            curr_exp_trial = ExpTrial(self, h, duration, stim_noise, trial_number, 
+                 init_state)
             curr_obs_trial = ObsTrial(curr_exp_trial, observer)
 #            curr_obs_trial.inference()
             curr_exp_trial.save()
@@ -30,17 +36,21 @@ class Experiment(object):
 # Corresponds to single trial
 class ExpTrial(object):
     def __init__(self, expt, h, duration, stim_noise, trial_number, 
-                 init_state, end_state):
+                 init_state):
         self.true_h = h
         self.duration = duration
         self.stim_noise = stim_noise
         self.trial_number = trial_number
         self.init_state = init_state
-        self.end_state = end_state
         self.cp_times = gen_cp(self.duration, self.true_h)
+        self.end_state = compute_endstate(self.init_state, self.cp_times.size)
         self.expt = expt
         self.tot_trial = self.expt.tot_trial
 
+     def compute_endstate(self, init_state, ncp):
+        return 1
+        
+        
 #    def save(self):
 #        print('stimulus is:')
 #        print(self.stim)
@@ -91,6 +101,6 @@ class ObsTrial(object):
 # Test code
 #1.
 Expt = Experiment(setof_stim_noise=1, setof_trial_dur=5, setof_h=1,
-                  trial_number=1, outputs='perf_acc_last_cp')
+                  total_trial=1)
 Observer = IdealObs(dt=1, expt=Expt)
 Expt.launch(Observer)
