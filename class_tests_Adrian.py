@@ -1,16 +1,20 @@
 # Aim of this file is to create a few classes and methods to test
 # my ideas (Adrian)
 
+# Main documentation for this file is the Wiki:
+#   https://github.com/aernesto/dots-reversal-ideal-obs/wiki/Python-classes-and-methods
 import numpy as np
 
+# Overarching class
 class Experiment(object):
-    def __init__(self, stim_noise, trial_durations,
-                 trial_number, outputs = 'perf_acc_last_cp', states = (-1,1)):
+    def __init__(self, setof_stim_noise, setof_trial_dur, setof_h, trial_number,
+                 outputs='perf_acc_last_cp', states=np.array([-1, 1])):
         self.states = states
-        self.stim_noise = stim_noise  # TODO: extend this to a set of values
-        self.trial_durations = trial_durations  # for now an integer in msec.
+        self.setof_stim_noise = setof_stim_noise
+        self.setof_trial_dur = setof_trial_dur  # for now an integer in msec.
         self.trial_number = trial_number
         self.outputs = outputs
+        self.setof_h = setof_h
 
     def launch(self, observer):
         for trial_idx in range(self.trial_number):
@@ -20,10 +24,11 @@ class Experiment(object):
             curr_exp_trial.save()
             curr_obs_trial.save()
 
+# Corresponds to single trial
 class ExpTrial(object):
     def __init__(self, expt):
         self.expt = expt
-        self.stim = np.ones(self.expt.trial_durations)
+        self.stim = np.ones(self.expt.setof_trial_dur)
 
     def save(self):
         print('stimulus is:')
@@ -34,12 +39,13 @@ class ExpTrial(object):
 #    def __init__(self, exp_trial):
 #        self.exp_trial = exp_trial
 
+# Level 2
 class IdealObs(object):
-    def __init__(self, dt, expt, prior_states = (.5,.5), alpha=1, beta=1):
+    def __init__(self, dt, expt, prior_states=np.array([.5, .5]),
+                 prior_h=np.array([1, 1])):
         self.expt = expt  # reference to Experiment object
-        self.obs_noise = self.expt.stim_noise
-        self.alpha = alpha
-        self.beta = beta
+        self.obs_noise = self.expt.setof_stim_noise
+        self.prior_h = prior_h
         self.dt = dt  # in msec
         # TODO: check that dt divides all possible trial
         self.prior_states = prior_states
@@ -50,7 +56,7 @@ class ObsTrial(object):
     def __init__(self, exp_trial, observer):
         self.exp_trial = exp_trial
         self.observer = observer
-        self.observations = np.ones(self.exp_trial.expt.trial_durations)
+        self.observations = np.ones(self.exp_trial.expt.setof_trial_dur)
 
 #    def inference(self):
 #        return self.observations
@@ -61,10 +67,7 @@ class ObsTrial(object):
 
 # Test code
 #1.
-Expt = Experiment(stim_noise=1,trial_durations=5,
-                  trial_number=1,outputs='perf_acc_last_cp')
+Expt = Experiment(setof_stim_noise=1, setof_trial_dur=5, setof_h=1,
+                  trial_number=1, outputs='perf_acc_last_cp')
 Observer = IdealObs(dt=1, expt=Expt)
 Expt.launch(Observer)
-
-
-
