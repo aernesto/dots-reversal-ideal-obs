@@ -7,14 +7,15 @@ import numpy as np
 
 # Overarching class
 class Experiment(object):
-    def __init__(self, setof_stim_noise, setof_trial_dur, setof_h, trial_number,
+    def __init__(self, setof_stim_noise, setof_trial_dur, setof_h, tot_trial,
                  outputs='perf_acc_last_cp', states=np.array([-1, 1])):
         self.states = states
         self.setof_stim_noise = setof_stim_noise
         self.setof_trial_dur = setof_trial_dur  # for now an integer in msec.
-        self.trial_number = trial_number
+        self.tot_trial = tot_trial
         self.outputs = outputs
         self.setof_h = setof_h
+        self.results = []
 
     def launch(self, observer):
         for trial_idx in range(self.trial_number):
