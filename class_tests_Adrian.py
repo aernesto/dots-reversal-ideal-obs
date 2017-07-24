@@ -82,15 +82,19 @@ class Stimulus(object):
 class IdealObs(object):
     def __init__(self, dt, expt, prior_states=np.array([.5, .5]),
                  prior_h=np.array([1, 1])):
-        if (expt.setof_trial_dur % dt) == 0:
-            self.dt = dt  # in msec
-        else:
-            print('the observer\'s time step size does not divide the trial '
-                  'durations')
+        try:
+            if (expt.setof_trial_dur % dt) == 0:
+                self.dt = dt  # in msec
+            else:
+                raise AttributeError("Error in arguments: the observer's time"
+                                     "step size "
+                                     "'dt' "
+                                     "does not divide " 
+                                     "the trial durations 'setof_trial_dur'")
+        except AttributeError as err:
+            print(err.args)
 
         self.prior_h = prior_h
-
-        # TODO: check that dt divides all possible trial
         self.prior_states = prior_states
         self.expt = expt  # reference to Experiment object
         self.obs_noise = self.expt.setof_stim_noise
