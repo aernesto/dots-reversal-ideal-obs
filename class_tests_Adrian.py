@@ -2,8 +2,9 @@
 # my ideas (Adrian)
 
 # Main documentation for this file is the Wiki:
-#   https://github.com/aernesto/dots-reversal-ideal-obs/wiki/Python-classes-and-methods
+# https://github.com/aernesto/dots-reversal-ideal-obs/wiki/Python-classes-and-methods
 import numpy as np
+
 
 # Overarching class
 class Experiment(object):
@@ -24,16 +25,23 @@ class Experiment(object):
             stim_noise = self.setof_stim_noise
             trial_number = trial_idx
             init_state = self.states[0]
-            curr_exp_trial = ExpTrial(self, h, duration, stim_noise, trial_number, 
-                 init_state)
-            curr_obs_trial = ObsTrial(curr_exp_trial, observer)
-#            curr_obs_trial.inference()
-            curr_exp_trial.save()
-            curr_obs_trial.save()
-#     def save(self):
-#     def parallel_launch(self):
+            curr_exp_trial = ExpTrial(self, h, duration, stim_noise,
+                                      trial_number, init_state)
+            curr_stim = Stimulus(curr_exp_trial)
+            curr_obs_trial = ObsTrial(observer, curr_exp_trial, curr_stim)
+            curr_obs_trial.infer()
+#            curr_exp_trial.save()
+#            curr_obs_trial.save()
+        self.save()
 
-# Corresponds to single trial
+    def save(self):
+        print('temporary string')  # temporary
+
+    def parallel_launch(self):
+        return 0  # temporary
+
+
+# Corresponds to single trial constants
 class ExpTrial(object):
     def __init__(self, expt, h, duration, stim_noise, trial_number, 
                  init_state):
@@ -42,20 +50,23 @@ class ExpTrial(object):
         self.stim_noise = stim_noise
         self.trial_number = trial_number
         self.init_state = init_state
-        self.cp_times = gen_cp(self.duration, self.true_h)
-        self.end_state = compute_endstate(self.init_state, self.cp_times.size)
+        self.cp_times = self.gen_cp(self.duration, self.true_h)
+        self.end_state = self.compute_endstate(self.init_state,
+                                               self.cp_times.size)
         self.expt = expt
         self.tot_trial = self.expt.tot_trial
 
-     def compute_endstate(self, init_state, ncp):
+    def compute_endstate(self, init_state, ncp):
         return 1
-        
         
 #    def save(self):
 #        print('stimulus is:')
 #        print(self.stim)
 
-#    def gen_cp(self, duration, true_h):
+    def gen_cp(self, duration, true_h):
+        # TODO: import MATLAB Code
+        return np.array([2, 3])
+
 
 class Stimulus(object):
     def __init__(self, exp_trial):
@@ -64,7 +75,9 @@ class Stimulus(object):
         self.trial_number = self.exp_trial.trial_number
     
     def gen_stim(self):
-        return np.ones(self.expt.setof_trial_dur)
+        return np.ones(self.exp_trial.duration)
+
+
 # Level 2
 class IdealObs(object):
     def __init__(self, dt, expt, prior_states=np.array([.5, .5]),
@@ -75,6 +88,7 @@ class IdealObs(object):
         self.prior_states = prior_states
         self.expt = expt  # reference to Experiment object
         self.obs_noise = self.expt.setof_stim_noise
+
 
 class ObsTrial(object):
     def __init__(self, observer, exp_trial, stimulus):
@@ -87,10 +101,11 @@ class ObsTrial(object):
         self.observer = observer
         self.stimulus = stimulus
         
-    def gen_obs():
+    def gen_obs(self):
         return self.stimulus.stim
         
     def infer(self):
+        # TODO: import MATLAB code
         self.llr = np.ones(self.exp_trial.duration)
         self.decision = 1
 
@@ -98,9 +113,9 @@ class ObsTrial(object):
 #        print('observations are:')
 #        print(self.observations)
 
+
 # Test code
-#1.
 Expt = Experiment(setof_stim_noise=1, setof_trial_dur=5, setof_h=1,
-                  total_trial=1)
+                  tot_trial=1)
 Observer = IdealObs(dt=1, expt=Expt)
 Expt.launch(Observer)
