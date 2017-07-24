@@ -70,8 +70,8 @@ class ExpTrial(object):
 
 class Stimulus(object):
     def __init__(self, exp_trial):
-        self.stim = self.gen_stim()
         self.exp_trial = exp_trial
+        self.stim = self.gen_stim()
         self.trial_number = self.exp_trial.trial_number
     
     def gen_stim(self):
@@ -82,8 +82,14 @@ class Stimulus(object):
 class IdealObs(object):
     def __init__(self, dt, expt, prior_states=np.array([.5, .5]),
                  prior_h=np.array([1, 1])):
+        if (expt.setof_trial_dur % dt) == 0:
+            self.dt = dt  # in msec
+        else:
+            print('the observer\'s time step size does not divide the trial '
+                  'durations')
+
         self.prior_h = prior_h
-        self.dt = dt  # in msec
+
         # TODO: check that dt divides all possible trial
         self.prior_states = prior_states
         self.expt = expt  # reference to Experiment object
@@ -92,14 +98,14 @@ class IdealObs(object):
 
 class ObsTrial(object):
     def __init__(self, observer, exp_trial, stimulus):
+        self.observer = observer
+        self.exp_trial = exp_trial
+        self.stimulus = stimulus
         self.llr = []
         self.decision = 0
-        self.exp_trial = exp_trial
         self.obs_noise = self.exp_trial.stim_noise
         self.trial_number = self.exp_trial.trial_number
         self.obs = self.gen_obs()
-        self.observer = observer
-        self.stimulus = stimulus
         
     def gen_obs(self):
         return self.stimulus.stim
