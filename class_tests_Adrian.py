@@ -62,7 +62,23 @@ class ExpTrial(object):
         self.tot_trial = self.expt.tot_trial
 
     def compute_endstate(self, init_state, ncp):
-        return 1
+        # the fact that the last state equals the initial state depends on
+        # the evenness of the number of change points.
+        if ncp % 2 == 0:
+            switch = False
+        else:
+            switch = True
+
+        if init_state == self.expt.states[0]:
+            if switch:
+                return self.expt.states[1]
+            else:
+                return self.expt.states[0]
+        else:
+            if switch:
+                return self.expt.states[0]
+            else:
+                return self.expt.states[1]
 
     #    def save(self):
     #        print('stimulus is:')
