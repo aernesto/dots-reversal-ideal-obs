@@ -50,6 +50,7 @@ class Experiment(object):
 class ExpTrial(object):
     def __init__(self, expt, h, duration, stim_noise, trial_number,
                  init_state):
+        self.expt = expt
         self.true_h = h
         self.duration = duration
         self.stim_noise = stim_noise
@@ -58,7 +59,6 @@ class ExpTrial(object):
         self.cp_times = self.gen_cp(self.duration, self.true_h)
         self.end_state = self.compute_endstate(self.init_state,
                                                self.cp_times.size)
-        self.expt = expt
         self.tot_trial = self.expt.tot_trial
 
     def compute_endstate(self, init_state, ncp):
