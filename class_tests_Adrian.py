@@ -2,12 +2,14 @@
 # my ideas (Adrian)
 
 # Main documentation for this file is the Wiki:
-# https://github.com/aernesto/dots-reversal-ideal-obs/wiki/Python-classes-and-methods
+# https://github.com/aernesto/dots-reversal-ideal-obs/wiki/Python-classes-and
+# -methods
 
 # Comment practice: In this script, we write comments before the targeted
 # instruction
 
 import numpy as np
+
 
 # Overarching class
 class Experiment(object):
@@ -33,8 +35,8 @@ class Experiment(object):
             curr_stim = Stimulus(curr_exp_trial)
             curr_obs_trial = ObsTrial(observer, curr_exp_trial, curr_stim)
             curr_obs_trial.infer()
-#            curr_exp_trial.save()
-#            curr_obs_trial.save()
+        # curr_exp_trial.save()
+        #            curr_obs_trial.save()
         self.save()
 
     def save(self):
@@ -46,7 +48,7 @@ class Experiment(object):
 
 # Corresponds to single trial constants
 class ExpTrial(object):
-    def __init__(self, expt, h, duration, stim_noise, trial_number, 
+    def __init__(self, expt, h, duration, stim_noise, trial_number,
                  init_state):
         self.true_h = h
         self.duration = duration
@@ -61,41 +63,53 @@ class ExpTrial(object):
 
     def compute_endstate(self, init_state, ncp):
         return 1
-        
-#    def save(self):
-#        print('stimulus is:')
-#        print(self.stim)
 
+    #    def save(self):
+    #        print('stimulus is:')
+    #        print(self.stim)
 
     '''
     generates poisson train of duration milliseconds with rate true_h in Hz, 
     using the Gillespie algorithm.
+    
+    print statements are only there for debugging purposes
     '''
     def gen_cp(self, duration, true_h):
-        # TODO: import MATLAB Code
+        # print('launching gen_cp')
+
         # convert duration into seconds.
         secdur = duration / 1000.0
+        # print('secdur = '), secdur
         '''
         pre-allocate ten times the mean array size 
         for speed, will be shrinked after computation
         '''
-        t = np.zeros((np.ceil(10*true_h*secdur), 1))
+        nEntries = int(np.ceil(10 * true_h * secdur))
+        # print('allocated entries = '), nEntries
+
+        t = np.zeros((nEntries, 1))
         totalTime = 0
         eventIdx = -1
+
         while totalTime < secdur:
-            sojournTime = np.random.exponential(1/true_h)
+            sojournTime = np.random.exponential(1. / true_h)
             totalTime += sojournTime
             eventIdx += 1
             t[eventIdx] = totalTime
+
         # trim unused nodes, and maybe last event if occurred beyond secdur
+
+        # print t[0:10]
         lastEvent, idxLastEvent = t.max(0), t.argmax(0)
+        # print 'lastEvent = ', lastEvent, 'idxLastEvent = ', idxLastEvent
+
         if lastEvent > secdur:
             idxLastEvent -= 1
 
         if idxLastEvent == -1:
             t = np.zeros((0, 1))
         else:
-            t = t[0:idxLastEvent+1]
+            t = t[0:int(idxLastEvent) + 1]
         return t
 
 
@@ -104,7 +118,7 @@ class Stimulus(object):
         self.exp_trial = exp_trial
         self.stim = self.gen_stim()
         self.trial_number = self.exp_trial.trial_number
-    
+
     def gen_stim(self):
         return np.ones(self.exp_trial.duration)
 
@@ -120,7 +134,7 @@ class IdealObs(object):
                 raise AttributeError("Error in arguments: the observer's time"
                                      "step size "
                                      "'dt' "
-                                     "does not divide " 
+                                     "does not divide "
                                      "the trial durations 'setof_trial_dur'")
         except AttributeError as err:
             print(err.args)
@@ -141,16 +155,17 @@ class ObsTrial(object):
         self.obs_noise = self.exp_trial.stim_noise
         self.trial_number = self.exp_trial.trial_number
         self.obs = self.gen_obs()
-        
+
     def gen_obs(self):
         return self.stimulus.stim
-        
+
     def infer(self):
         # TODO: import MATLAB code
         self.llr = np.ones(self.exp_trial.duration)
         self.decision = 1
 
-#    def save(self):
+
+# def save(self):
 #        print('observations are:')
 #        print(self.observations)
 
