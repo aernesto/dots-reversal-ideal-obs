@@ -23,7 +23,24 @@ class Experiment(object):
         self.outputs = outputs
         self.setof_h = setof_h
         self.results = []
-        self.exp_prior = exp_prior
+        self.exp_prior = exp_prior  # TODO: check entries >=0 and sum to 1
+        # Corresponds to 25 frames/sec (for stimulus presentation)
+        self.exp_dt = 40
+
+    # function that switches the environment state that is given as argument
+    def switch(self, H):
+        try:
+            # might be more elegant to use elseif syntax below
+            if H in self.states:
+                if H == self.states[0]:
+                    return self.states[1]
+                else:
+                    return self.states[0]
+            else:
+                raise ValueError("Error in argument H: must be an element of "
+                                 "Experiment.states")
+        except AttributeError as err:
+            print(err.args)
 
     def launch(self, observer):
         for trial_idx in range(self.tot_trial):
@@ -62,32 +79,33 @@ class ExpTrial(object):
         self.trial_number = trial_number
         self.init_state = init_state
         self.cp_times = self.gen_cp(self.duration, self.true_h)
-        self.end_state = self.compute_endstate(self.init_state,
-                                               self.cp_times.size)
+        self.end_state = self.compute_endstate(self.cp_times.size)
         self.tot_trial = self.expt.tot_trial
 
-    def compute_endstate(self, init_state, ncp):
+    def compute_endstate(self, ncp):
         # the fact that the last state equals the initial state depends on
         # the evenness of the number of change points.
         if ncp % 2 == 0:
-            switch = False
+            return self.init_state
         else:
-            switch = True
-
-        if init_state == self.expt.states[0]:
-            if switch:
-                return self.expt.states[1]
-            else:
-                return self.expt.states[0]
-        else:
-            if switch:
-                return self.expt.states[0]
-            else:
-                return self.expt.states[1]
+            return self.expt.switch(self.init_state)
 
     #    def save(self):
     #        print('stimulus is:')
     #        print(self.stim)
+
+    # the following is the likelihood used to generate stimulus values,
+    #  given the true state H of the environment
+    def lh(self, H):
+        # try clause might be redundant (because switch method does it)
+        try:
+            if H in self.expt.states:
+                return np.random.normal(H, self.stim_noise)
+            else:
+                raise ValueError("Error in argument H: must be an element of "
+                                 "Experiment.states")
+        except AttributeError as err:
+            print(err.args)
 
     '''
     generates poisson train of duration milliseconds with rate true_h in Hz, 
@@ -96,6 +114,7 @@ class ExpTrial(object):
     print statements are only there for debugging purposes
     '''
     def gen_cp(self, duration, true_h):
+        # TODO: Generate a warning if >1 ch-pt occur in Experiment.exp_dt window
         # print('launching gen_cp')
 
         # convert duration into seconds.
@@ -131,18 +150,50 @@ class ExpTrial(object):
             t = np.zeros((0, 1))
         else:
             t = t[0:int(idxLastEvent) + 1]
+
         return t
 
 
 class Stimulus(object):
     def __init__(self, exp_trial):
         self.exp_trial = exp_trial
-        self.stim = self.gen_stim()
         self.trial_number = self.exp_trial.trial_number
+        self.stim = self.gen_stim()
 
     def gen_stim(self):
-        return np.ones(self.exp_trial.duration)
+        binsize = self.exp_trial.expt.exp_dt  # in msec
 
+        # number of bins, i.e. number of stimulus values to compute
+        nbins = (self.exp_trial.duration - 1) / binsize
+
+        # stimulus vector to be filled by upcoming while loop
+        stimulus = np.zeros((nbins, 1))
+
+        # loop variables
+        bin_nb = 1
+        last_envt = self.exp_trial.init_state
+        cp_idx = 0
+
+        while bin_nb < nbins:
+            stim_idx = bin_nb - 1  # index of array entry to fill in
+
+            # check environment state in current bin
+            curr_time = (bin_nb - 1) * binsize  # in msec
+
+            if curr_time < self.exp_trial.cp_times[cp_idx]:
+                new_envt = last_envt
+            else:
+                new_envt = self.exp_trial.expt.switch(last_envt)
+
+            # compute likelihood to generate stimulus value
+            stimulus[stim_idx] = self.exp_trial.lh(new_envt)
+
+            # update variables for next iteration
+            last_envt = new_envt
+            cp_idx += 1
+            bin_nb += 1
+
+        return stimulus
 
 # Level 2
 class IdealObs(object):
