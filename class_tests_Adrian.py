@@ -14,7 +14,8 @@ import numpy as np
 # Overarching class
 class Experiment(object):
     def __init__(self, setof_stim_noise, setof_trial_dur, setof_h, tot_trial,
-                 outputs='perf_acc_last_cp', states=np.array([-1, 1])):
+                 outputs='perf_acc_last_cp', states=np.array([-1, 1]),
+                 exp_prior=np.array([.5,.5])):
         self.states = states
         self.setof_stim_noise = setof_stim_noise
         self.setof_trial_dur = setof_trial_dur  # for now an integer in msec.
@@ -22,6 +23,7 @@ class Experiment(object):
         self.outputs = outputs
         self.setof_h = setof_h
         self.results = []
+        self.exp_prior = exp_prior
 
     def launch(self, observer):
         for trial_idx in range(self.tot_trial):
@@ -29,7 +31,10 @@ class Experiment(object):
             duration = self.setof_trial_dur
             stim_noise = self.setof_stim_noise
             trial_number = trial_idx
-            init_state = self.states[0]
+            if np.random.uniform() < self.exp_prior[0]:
+                init_state = self.states[0]
+            else:
+                init_state = self.states[1]
             curr_exp_trial = ExpTrial(self, h, duration, stim_noise,
                                       trial_number, init_state)
             curr_stim = Stimulus(curr_exp_trial)
