@@ -3,8 +3,11 @@
 
 # Main documentation for this file is the Wiki:
 # https://github.com/aernesto/dots-reversal-ideal-obs/wiki/Python-classes-and-methods
-import numpy as np
 
+# Comment practice: In this script, we write comments before the targeted
+# instruction
+
+import numpy as np
 
 # Overarching class
 class Experiment(object):
@@ -63,9 +66,37 @@ class ExpTrial(object):
 #        print('stimulus is:')
 #        print(self.stim)
 
+
+    '''
+    generates poisson train of duration milliseconds with rate true_h in Hz, 
+    using the Gillespie algorithm.
+    '''
     def gen_cp(self, duration, true_h):
         # TODO: import MATLAB Code
-        return np.array([2, 3])
+        # convert duration into seconds.
+        secdur = duration / 1000.0
+        '''
+        pre-allocate ten times the mean array size 
+        for speed, will be shrinked after computation
+        '''
+        t = np.zeros((np.ceil(10*true_h*secdur), 1))
+        totalTime = 0
+        eventIdx = -1
+        while totalTime < secdur:
+            sojournTime = np.random.exponential(1/true_h)
+            totalTime += sojournTime
+            eventIdx += 1
+            t[eventIdx] = totalTime
+        # trim unused nodes, and maybe last event if occurred beyond secdur
+        lastEvent, idxLastEvent = t.max(0), t.argmax(0)
+        if lastEvent > secdur:
+            idxLastEvent -= 1
+
+        if idxLastEvent == -1:
+            t = np.zeros((0, 1))
+        else:
+            t = t[0:idxLastEvent+1]
+        return t
 
 
 class Stimulus(object):
