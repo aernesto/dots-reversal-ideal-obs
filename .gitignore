@@ -102,3 +102,4 @@ ENV/
 
 # PyCharm
 .idea/
+tests_adrian.ipynb
