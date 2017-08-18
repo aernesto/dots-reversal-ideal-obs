@@ -1,4 +1,5 @@
 clear
+clc
 % Compute the performance of the ideal-observer model for a single point in
 % parameter space.
 %
@@ -33,7 +34,7 @@ priorPrec=alpha+beta;
 
 %start loop on time points
 c=1;
-N=timePoints(c);       %time at which each simulation stops.
+N=timePoints(c);    %time at which each simulation stops.
 freqU=0;              %frequency of correct responses for unknown rate
 
 %loop over sims
@@ -76,8 +77,9 @@ x = testOBS(1);
         % make an observation
         x = testOBS(j+1);
         %compute likelihoods
-        xp = exp(-(x-m)^2/(2*sigma^2));
-        xm = exp(-(x+m)^2/(2*sigma^2));
+        prefactor = 1 / sqrt(2*pi*sigma^2);
+        xp = exp(-(x-m)^2/(2*sigma^2))*prefactor;
+        xm = exp(-(x+m)^2/(2*sigma^2))*prefactor;
 
         %specifics of unknown rate algorithm
         % update the boundaries (with 0 and j changepoints)
@@ -87,12 +89,16 @@ x = testOBS(1);
                 Hmn(1) = xm*ea*Hmc(1);
                 Hpn(j+1) = xp*eb*Hmc(j);
                 Hmn(j+1) = xm*eb*Hpc(j);
+%                 if j > N-2
+%                     Hpn'
+%                     Hmn'
+%                 end
                 
                 % update the interior values
                 if j>1
                     vk = (2:j)';
-                    ep = 1-(vk-1+alpha)/(j-1+priorPrec)   %no change
-                    em=(vk-2+alpha)/(j-1+priorPrec)       %change
+                    ep = 1-(vk-1+alpha)/(j-1+priorPrec);   %no change
+                    em=(vk-2+alpha)/(j-1+priorPrec);       %change
                     Hpn(vk) = xp*(ep.*Hpc(vk)+em.*Hmc(vk-1));
                     Hmn(vk) = xm*(ep.*Hmc(vk)+em.*Hpc(vk-1));
                 end
@@ -104,9 +110,17 @@ x = testOBS(1);
                 Pp(:,j+1)=Hpc;
                 Pm(:,j+1)=Hmc;
                 %compute marginals over state if last iteration
-                if j==N-1
-                    lp = sum(Hpc); lm = sum(Hmc);
-                end           
+%                 if j==N-1
+%                     lp = sum(Hpc); lm = sum(Hmc);
+%                     j
+%                     vk
+%                     ea
+%                     eb
+%                     ep
+%                     em
+%                     Hpc
+%                     Hmc
+                %end           
     end
 
     %compute decisions (interrogate the system)
@@ -117,5 +131,5 @@ x = testOBS(1);
 end
      perf(c)=freqU;
      perf=perf/nSims;
-    % Pp
-    % Pm
+     Pp
+     Pm
