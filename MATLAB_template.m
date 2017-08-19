@@ -17,13 +17,13 @@ clc
 
 % Expand params vector into specific variables:
 SNR=2;
-T=4;
+T=2000;
 h=0.1;
 alpha=1;
 beta=1;
 nSims = 1;
 timePoints=floor(linspace(T,T)); %points for which sims are run
-testOBS = [.7,-.2,-2,3.6];
+% testOBS = [.7,-.2,-2,3.6];
 
 %frequency of correct answers at each time point for known rate algorithms
 m = 1;                      %half the distance between means of likelihoods
@@ -50,7 +50,7 @@ Pm = Pp;
         strue=-m;
     end
 %make an observation
-x = testOBS(1);
+x = strue + sigma * randn;
 
 %algorithm for unknown rate - first time step
 %compute joint probabilities over state and change point count
@@ -75,7 +75,7 @@ x = testOBS(1);
         end
 
         % make an observation
-        x = testOBS(j+1);
+        x = strue + sigma * randn;
         %compute likelihoods
         prefactor = 1 / sqrt(2*pi*sigma^2);
         xp = exp(-(x-m)^2/(2*sigma^2))*prefactor;
@@ -149,12 +149,13 @@ x = testOBS(1);
     end
 
     %compute decisions (interrogate the system)
-    decvaru=m*sign(log(lp/lm));
-    if decvaru==strue
-        freqU=freqU+1;           %count correct answers
-    end
+%     decvaru=m*sign(log(lp/lm));
+%     if decvaru==strue
+%         freqU=freqU+1;           %count correct answers
+%     end
 end
-     perf(c)=freqU;
-     perf=perf/nSims;
+%      perf(c)=freqU;
+%      perf=perf/nSims;
+     disp("done!")
 %      Pp
 %      Pm
