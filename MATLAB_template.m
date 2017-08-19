@@ -83,53 +83,78 @@ x = testOBS(1);
 
         %specifics of unknown rate algorithm
         % update the boundaries (with 0 and j changepoints)
-                ea = 1-alpha/(j-1+priorPrec);
-                eb = (j-1+alpha)/(j-1+priorPrec);
-                Hpn(1) = xp*ea*Hpc(1);
-                Hmn(1) = xm*ea*Hmc(1);
-                Hpn(j+1) = xp*eb*Hmc(j);
-                Hmn(j+1) = xm*eb*Hpc(j);
-%                 if j > N-2
-%                     Hpn'
-%                     Hmn'
+        ea = 1-alpha/(j-1+priorPrec);
+        eb = (j-1+alpha)/(j-1+priorPrec);
+        Hpn(1) = xp*ea*Hpc(1);
+        Hmn(1) = xm*ea*Hmc(1);
+        Hpn(j+1) = xp*eb*Hmc(j);
+        Hmn(j+1) = xm*eb*Hpc(j);
+%                 if j == N-1
+%                     disp(Hpn')
+%                     disp(Hmn')
 %                 end
-                
-                % update the interior values
-                if j>1
-                    vk = (2:j)';
-                    ep = 1-(vk-1+alpha)/(j-1+priorPrec);   %no change
-                    em=(vk-2+alpha)/(j-1+priorPrec);       %change
-                    Hpn(vk) = xp*(ep.*Hpc(vk)+em.*Hmc(vk-1));
-                    Hmn(vk) = xm*(ep.*Hmc(vk)+em.*Hpc(vk-1));
-                end
-                
-                % sum probabilities in order to normalize
-                Hs = sum(Hpn)+sum(Hmn);
-                Hpc=Hpn/Hs;
-                Hmc=Hmn/Hs;
-                Pp(:,j+1)=Hpc;
-                Pm(:,j+1)=Hmc;
-                %compute marginals over state if last iteration
-%                 if j==N-1
-%                     lp = sum(Hpc); lm = sum(Hmc);
-%                     j
-%                     vk
-%                     ea
-%                     eb
-%                     ep
-%                     em
-%                     Hpc
-%                     Hmc
-                %end           
+%                 
+        % update the interior values
+        if j>1
+            vk = (2:j)';
+            ep = 1-(vk-1+alpha)/(j-1+priorPrec);   %no change
+            em = (vk-2+alpha)/(j-1+priorPrec);       %change
+%             if j == N-1
+%                 disp(xp)
+%                 disp(xm)
+%                 disp(Hpc')
+%                 disp(Hmc')
+%                 disp(vk')
+%                 disp(Hpc(vk)')
+%                 disp(Hmc(vk-1)')
+%                 size(Hpn(vk))
+%                 size(ep)
+%                 size(Hpc(vk))
+%                 size(em)
+%                 size(Hmc(vk-1))
+%             end
+            Hpn(vk) = xp*(ep.*Hpc(vk)+em.*Hmc(vk-1));
+            Hmn(vk) = xm*(ep.*Hmc(vk)+em.*Hpc(vk-1));
+        end
+
+        % sum probabilities in order to normalize
+%         if j == N-1
+%             disp(Hpn')
+%             disp(Hmn')
+%         end
+        Hs = sum(Hpn)+sum(Hmn);
+        Hpc=Hpn/Hs;
+        Hmc=Hmn/Hs;
+%         if j == N-1
+%             disp(Hs)
+%             disp(Hpc')
+%             disp(Hmc')
+%         end
+        Pp(:,j+1)=Hpc;
+        Pm(:,j+1)=Hmc;
+        %compute marginals over state if last iteration
+
+        lp = sum(Hpc); lm = sum(Hmc);
+%                 disp(j)
+%                 if j>=N-2
+%                     disp(vk')
+%                 end
+%                 disp([ea,eb])
+%                 if j>=N-2
+%                     disp([ep',em'])
+%                 end
+%                 disp([Hpn';Hmn'])
+%        disp([Hpc';Hmc'])
+  
     end
 
     %compute decisions (interrogate the system)
-            decvaru=m*sign(log(lp/lm));
-            if decvaru==strue
-                freqU=freqU+1;           %count correct answers
-            end
+    decvaru=m*sign(log(lp/lm));
+    if decvaru==strue
+        freqU=freqU+1;           %count correct answers
+    end
 end
      perf(c)=freqU;
      perf=perf/nSims;
-     Pp
-     Pm
+%      Pp
+%      Pm
