@@ -23,6 +23,12 @@ python -m ipykernel install --user --name myenv --display-name "Python (myenv)"
 
 ```
 
+When you are finished working you can deactivate the virtual environment through the following command
+
+```
+deactivate source
+```
+
 Be sure to change the kernel in the Jupyter Notebook to our new IPython kernel.
 
 # dots-reversal-ideal-obs
