@@ -7,7 +7,7 @@
 Create a new virtual environment through Conda with the specifications listed in the environment.yml file. You can replace myenv with your desired name for the environment.
 
 ```
-conda env create -f environment.yaml -n myenv
+conda env create -f environment.yml -n myenv
 ```
 
 Activate the virtual environment
