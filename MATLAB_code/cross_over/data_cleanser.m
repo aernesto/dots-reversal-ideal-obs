@@ -43,7 +43,8 @@ for i=1:dim1 % loop over subjects
        if (isnan(last_changepoint_index))
            last_changepoint_index = 1;
            %find the time since the last changepoint
-           time_elapsed(index) = 0;
+           dur = all_data(i).statusData(j).duration;
+           time_elapsed(index) = dur - ((last_changepoint_index/tind)*dur);
            time_elapsed_2(index) = 0;
        else
            %find accuracy
@@ -53,9 +54,12 @@ for i=1:dim1 % loop over subjects
            dur = all_data(i).statusData(j).duration;
            time_elapsed(index) = dur - ((last_changepoint_index/tind)*dur);
            time_elapsed_2(index) = all_data(i).statusData(j).FST;
-           if time_elapsed(index) == 0
-               display(['0 FST subject ',file_name{i},' trial ',int2str(j)])
-           end
+       end
+       if time_elapsed(index) == 0
+           disp(['0 Justin subject ',file_name{i},' trial ',int2str(j)])
+       end
+       if time_elapsed_2(index) == 0
+           disp(['0 Adrian subject ',file_name{i},' trial ',int2str(j)])
        end
    end
 end
@@ -63,7 +67,7 @@ end
 %remove trials that do not have changepoint
 ind_remove = find(~time_elapsed);
 time_elapsed(ind_remove) = [];
-time_elapsed_2(ind_remove) = [];
+time_elapsed_2(isnan(time_elapsed_2)) = [];
 correct(ind_remove) = [];
 
 save(strcat('H_', H,'/correct'),'correct');
