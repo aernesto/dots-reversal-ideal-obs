@@ -1,0 +1,52 @@
+We want to launch a basic set of simulations to compare the performance of
+various ideal observer models, depending on what type of signals they receive
+during the trial.
+
+1. For each ideal observer model, simulate: 
+- 1,000 consecutive trials with reset of stimulus between trials. In this case,
+  map the posterior first two moments to Beta prior over hazard rate.
+- 1,000 consecutive trials with NO reset of stimulus between trials. For this
+  case, keep the accumulation process going across trials, incorporating the
+  various types of signals as they arrive.
+
+2. Two main types of models are used: one that knows the true hazard rate, and
+one that learns it, starting with a flat prior.
+
+3. We test all the following types of signals, on each simulated trial: 
+- no signal at all
+- signal with full reliability about the state, after end of trial
+- signal with partial reliability about the state, after end of trial (75%)
+- signal with full reliability about each change point
+- signal with partial reliability (80%) about each change point
+
+4. Use the following parameters:
+- SNR = 1
+- true hazard rate = 2 / 50
+- trial duration = 50 time steps
+- flat priors everywhere
+
+5. Output of sims:
+- for each trial, store (in an SQLite database -- See with Justin how to do it
+  on Heroku): 
+seed, 
+commit number, 
+SNR, 
+hazard rate, 
+trial duration, 
+observer type, 
+state signal (Boolean), 
+state signal reliability, 
+CP signal (Boolean), 
+CP signal reliability, 
+trial number within block, 
+trial stim reset (Boolean), 
+init state, 
+end state, 
+observer's answer, 
+correctness of response.
+
+- for each block of 1,000 trials, and for each set of conditions, compute the 
+average performance across the 1,000 trials (percentage correct).
+
+6. Data analysis: Compare performance across all groups of conditions. Use some
+statistical technique. Anova, hypothesis testing?
