@@ -1,0 +1,21 @@
+Find which values of h and SNR maximize the cross-over effect, for an
+ideal-observer who knows the true hazard rate.
+
+Fix the number of trials required for each bin. 500 seems reasonable
+Fix the bin width. 250 msec seems reasonable
+Fix trial duration. 6 seconds seems good
+Fix the vector of hazard rate values to test: [0.05,.1,.2,.3,.5] seems good
+Fix the vector of SNR values to test. [.5,1,1.5,2] seems good
+
+Generate the trials in advance, to fill up all the bins, for each hazard rate
+and SNR condition. Don't store the trial but rather the seed value and the bin 
+location.
+
+For each hazard rate, each SNR and each trial, generate a realization of the 
+observations, and run the inference algorithm from the ideal-observer on them. 
+Store the correctness of the answer and the parameter values. 
+
+Use the above to compute the percentage correct for each bin in each hazard
+rate and SNR condition.
+
+Generate cross-over curves for all pairs of hazard rate values, and all SNRs.
