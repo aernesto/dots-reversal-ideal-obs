@@ -4,7 +4,7 @@ ideal-observer who knows the true hazard rate.
 Fix the number of trials required for each bin. 500 seems reasonable
 Fix the bin width. 250 msec seems reasonable
 Fix trial duration. 6 seconds seems good
-Fix the vector of hazard rate values to test: [0.05,.1,.2,.3,.5] seems good
+Fix the vector of hazard rate values to test: [0.1,.5,1,1.5,2] seems good
 Fix the vector of SNR values to test. [.5,1,1.5,2] seems good
 
 Generate the trials in advance, to fill up all the bins, for each hazard rate
