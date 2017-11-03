@@ -106,3 +106,5 @@ tests_adrian.ipynb
 
 #Secure
 database.yml
+*.db
+MATLAB_code/*
