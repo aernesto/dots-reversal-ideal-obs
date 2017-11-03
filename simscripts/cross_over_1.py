@@ -18,6 +18,7 @@ plt.rcdefaults()
 # Debug mode
 debug = True
 
+
 def printdebug(debugmode, string=None, vartuple=None):
     """
     prints string, varname and var for debug purposes
