@@ -85,21 +85,21 @@ column_names = {'commit': 'comm',
                 'bin_number': 'numb',
                 'bin_width': 'bwidth'}
 
-ntrials = 100                     # true value is 500 or 1000
+ntrials = 500                     # true value is 500 or 1000
 # maximum number of iterations allowed in the upcoming while loop
 # factor 8 is the number of bins
 maxtrials = 1000 * 8 * ntrials
 bin_width = 250                 # in msec
 trial_duration = [6.000]        # in sec
 min_time = [4.000]
-hazard = [.5]                   # true [0.1, .5, 1, 1.5, 2]
-snrs = [1]                      # true [0.5, 1, 1.5, 2]
-commit_number = 'dfwoeirlwejfkdsf'
+hazard = [0.1, .5, 1, 1.5, 2]
+snrs = [0.5, 1, 1.5, 2]
+commit_number = 'b614a5eed6a8b84d514b3f808034a0534b3e2b5c'
 
 
 if __name__ == "__main__":
     # name of SQLite db
-    dbname = 'test'
+    dbname = 'true_1'
     # create connection to SQLite db
     db = dataset.connect('sqlite:///' + dbname + '.db')
     # get handle for specific table of the db
