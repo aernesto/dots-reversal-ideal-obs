@@ -94,7 +94,7 @@ trial_duration = [6.000]        # in sec
 min_time = [4.000]
 hazard = [0.1, .5, 1, 1.5, 2]
 snrs = [0.5, 1, 1.5, 2]
-commit_number = 'b614a5eed6a8b84d514b3f808034a0534b3e2b5c'
+commit_number = 'f5ecb459da199aeb4eefc33cf96cb60e7a515b7a'
 
 
 if __name__ == "__main__":
