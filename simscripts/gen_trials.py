@@ -145,9 +145,14 @@ if __name__ == "__main__":
                     bin_nb = time2bin(last_cp_time, bin_width, trial_duration[0], min_time[0])
 
                     # go to next iteration of while loop without saving the data, if bin_nb is None
-                    # or if this bin is already full. Otherwise, increment the count and pursue the loop
+                    # or if this bin is already full. But if bin is full, check all other bins and
+                    # if all bins are full, exit while loop.
+                    # Otherwise, increment the count and pursue the loop
                     if bin_nb is None or bin_counts[str(bin_nb)] >= ntrials:
-                        continue
+                        if sum(bin_counts.values()) == ntrials * 8:
+                            break
+                        else:
+                            continue
                     else:
                         bin_counts[str(bin_nb)] += 1
 
