@@ -99,7 +99,7 @@ commit_number = 'b614a5eed6a8b84d514b3f808034a0534b3e2b5c'
 
 if __name__ == "__main__":
     # name of SQLite db
-    dbname = 'true_1'
+    dbname = 'true_2'
     # create connection to SQLite db
     db = dataset.connect('sqlite:///' + dbname + '.db')
     # get handle for specific table of the db
@@ -165,9 +165,13 @@ if __name__ == "__main__":
                                   column_names['bin_number']: bin_nb,
                                   column_names['bin_width']: bin_width})
 
-                print('outer while loop exited')
+                print('outer while loop exited after ', n, 'iterations')
                 print('final trial counts in each bin are')
                 print(bin_counts)
+
+                # reset dict counts to 0
+                for key in bin_counts:
+                    bin_counts[key] = 0
 
     bb = datetime.datetime.now().replace(microsecond=0)
     print('total elapsed time in hours:min:sec is', bb - aa)
