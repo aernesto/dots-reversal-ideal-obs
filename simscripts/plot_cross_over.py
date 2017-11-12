@@ -67,7 +67,7 @@ def plot_cross_over(pair1, pair2, data, columnnames, fignum):
 
     plt.figure(fignum)
     plt.plot(x1, curve1, x2, curve2, linewidth=3.0)
-    plt.xlim(7, 0)
+    plt.xlim(0, 7)
     plt.title('cross-over 500 trials per bin')
     plt.legend(['snr ' + str(pair1[0]) + '; h ' + str(pair1[1]),
                 'snr ' + str(pair2[0]) + '; h ' + str(pair2[1])])
@@ -98,5 +98,5 @@ if __name__ == "__main__":
                     'decision': 'dec',
                     'correctness': 'correct'}
 
-    plot_cross_over((1, 0.1), (1, 2), db, column_names, 1)
-    plot_cross_over((2, 0.1), (2, 2), db, column_names, 2)
+    plot_cross_over((1, 0.5), (1, 1.5), db, column_names, 1)
+    plot_cross_over((2, 0.5), (2, 1.5), db, column_names, 2)
