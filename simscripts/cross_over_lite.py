@@ -44,7 +44,11 @@ def read_param(db_table, row_num):
     :return: tuple of parameters (trial_duration, snr, h, seed)
     """
     row = db_table.find_one(id=row_num)
-    return row['trial_duration'], row['snr'], row['h'], row['seed']
+    final_tuple = (row[column_names['trial_duration']],
+                   row[column_names['snr']],
+                   row[column_names['h']],
+                   row[column_names['seed']])
+    return final_tuple
 
 
 def generate_cp(t, s, hazard):
@@ -87,7 +91,7 @@ def run_sde(cp_times, hazard, mm, trial_duration):
     rho = np.sqrt(2*mm)
     dt = 0.01
     sqrt_dt_rho = np.sqrt(dt)*rho
-    num_steps = trial_duration / dt  # number of time steps
+    num_steps = int(trial_duration / dt)  # number of time steps
     y = np.zeros(num_steps)  # evidence
     np.random.seed(None)  # randomize seed of rng
     init = np.random.choice([-1, 1])  # initial state of the environment, with flat prior
@@ -96,13 +100,17 @@ def run_sde(cp_times, hazard, mm, trial_duration):
     cp_index = 0
     last_cp = cp_times[cp_index]
 
-    for i in range(num_steps):
+    keep_if = True
+    for i in range(num_steps - 1):
         current_time += dt
 
-        if current_time >= last_cp:  # change hidden state if change point was crossed
+        if (current_time >= last_cp) and keep_if:  # change hidden state if change point was crossed
             state *= -1
-            cp_index += 1
-            last_cp = cp_times[cp_index]
+            if cp_index < len(cp_times) - 1:
+                cp_index += 1
+                last_cp = cp_times[cp_index]
+            elif cp_index == len(cp_times) - 1:
+                keep_if = False
 
         y[i+1] = y[i] + dt * (np.sign(state) * mm - 2 * hazard * np.sinh(y[i])) + sqrt_dt_rho * np.random.normal()
 
@@ -117,9 +125,14 @@ if __name__ == "__main__":
     # get handle for specific table of the db
     table = db['crossover']
 
-    for row_id in range(80000):
-        duration, snr, h, seed = read_param(table, row_id)
+    for row_id in range(10):
+        duration, snr, h, seed = read_param(table, row_id + 1)
         m = 2 * snr
+        last = generate_cp(duration, seed, h)
+        print('row id', row_id + 1)
+        print('last cp', last[-1])
+        curr_row = table.find_one(id=(row_id + 1))
+        print('bin value', curr_row[column_names['bin_number']])
         init_state, end_state, decision, correctness = run_sde(generate_cp(duration, seed, h), h, m, duration)
 
         # Save info to database
@@ -127,4 +140,4 @@ if __name__ == "__main__":
                       column_names['end_state']: end_state,
                       column_names['decision']: decision,
                       column_names['correctness']: correctness,
-                      'id': row_id}, ['id'])
+                      'id': row_id + 1}, ['id'])
