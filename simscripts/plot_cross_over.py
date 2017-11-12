@@ -31,11 +31,11 @@ def plot_cross_over(pair1, pair2, data, columnnames, fignum):
     :param fignum: figure number (integer)
     :return: produces cross-over plot for the two given curves
     """
-    x = list(range(8))
-    result1 = data.query('SELECT AVG({}) AS perf FROM crossover WHERE \
-                         {} = {} AND {} = {} \
-                         GROUP BY {} \
-                         ORDER BY {} DESC;'.format(columnnames['correctness'],
+    result1 = data.query('SELECT {} AS bin, AVG({}) AS perf FROM crossover \
+                              WHERE {} = {} AND {} = {} \
+                              GROUP BY {} \
+                              ORDER BY {};'.format(columnnames['bin_number'],
+                                                   columnnames['correctness'],
                                                    columnnames['snr'],
                                                    pair1[0],
                                                    columnnames['h'],
@@ -43,24 +43,31 @@ def plot_cross_over(pair1, pair2, data, columnnames, fignum):
                                                    columnnames['bin_number'],
                                                    columnnames['bin_number']))
     curve1 = []
+    x1 = []
     for row_data in result1:
+        x1 += [row_data['bin']]
         curve1 += [row_data['perf']]
-    result2 = data.query('SELECT AVG({}) AS perf FROM crossover WHERE \
-                             {} = {} AND {} = {} \
-                             GROUP BY {} \
-                             ORDER BY {} DESC;'.format(columnnames['correctness'],
-                                                       columnnames['snr'],
-                                                       pair2[0],
-                                                       columnnames['h'],
-                                                       pair2[1],
-                                                       columnnames['bin_number'],
-                                                       columnnames['bin_number']))
+
+    result2 = data.query('SELECT {} AS bin, AVG({}) AS perf FROM crossover \
+                          WHERE {} = {} AND {} = {} \
+                          GROUP BY {} \
+                          ORDER BY {};'.format(columnnames['bin_number'],
+                                               columnnames['correctness'],
+                                               columnnames['snr'],
+                                               pair2[0],
+                                               columnnames['h'],
+                                               pair2[1],
+                                               columnnames['bin_number'],
+                                               columnnames['bin_number']))
     curve2 = []
+    x2 = []
     for row_data in result2:
+        x2 += [row_data['bin']]
         curve2 += [row_data['perf']]
 
     plt.figure(fignum)
-    plt.plot(x, curve1, x, curve2, linewidth=3.0)
+    plt.plot(x1, curve1, x2, curve2, linewidth=3.0)
+    plt.xlim(7, 0)
     plt.title('cross-over 500 trials per bin')
     plt.legend(['snr ' + str(pair1[0]) + '; h ' + str(pair1[1]),
                 'snr ' + str(pair2[0]) + '; h ' + str(pair2[1])])
