@@ -114,7 +114,12 @@ def run_sde(cp_times, hazard, mm, trial_duration):
 
         y[i+1] = y[i] + dt * (np.sign(state) * mm - 2 * hazard * np.sinh(y[i])) + sqrt_dt_rho * np.random.normal()
 
-    return init, state, np.sign(y[-1]), np.sign(y[-1]) == np.sign(state)
+    initial_state = int(init)
+    endstate = int(state)
+    final_decision = int(np.sign(y[-1]))
+    bool_dec = int(np.sign(y[-1]) == np.sign(state))
+
+    return initial_state, endstate, final_decision, bool_dec
 
 
 if __name__ == "__main__":
@@ -128,11 +133,11 @@ if __name__ == "__main__":
     for row_id in range(10):
         duration, snr, h, seed = read_param(table, row_id + 1)
         m = 2 * snr
-        last = generate_cp(duration, seed, h)
-        print('row id', row_id + 1)
-        print('last cp', last[-1])
-        curr_row = table.find_one(id=(row_id + 1))
-        print('bin value', curr_row[column_names['bin_number']])
+        # last = generate_cp(duration, seed, h)
+        # print('row id', row_id + 1)
+        # print('last cp', last[-1])
+        # curr_row = table.find_one(id=(row_id + 1))
+        # print('bin value', curr_row[column_names['bin_number']])
         init_state, end_state, decision, correctness = run_sde(generate_cp(duration, seed, h), h, m, duration)
 
         # Save info to database
