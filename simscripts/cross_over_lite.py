@@ -20,6 +20,7 @@ ALGORITHM
 """
 import numpy as np
 import dataset
+import datetime
 
 # the following dict just makes it more convenient for the developer to
 # access the appropriate column name in the database
@@ -129,8 +130,9 @@ if __name__ == "__main__":
     db = dataset.connect('sqlite:///' + dbname + '.db')
     # get handle for specific table of the db
     table = db['crossover']
+    aa = datetime.datetime.now().replace(microsecond=0)
 
-    for row_id in range(10):
+    for row_id in range(80000):
         duration, snr, h, seed = read_param(table, row_id + 1)
         m = 2 * snr
         # last = generate_cp(duration, seed, h)
@@ -146,3 +148,5 @@ if __name__ == "__main__":
                       column_names['decision']: decision,
                       column_names['correctness']: correctness,
                       'id': row_id + 1}, ['id'])
+    bb = datetime.datetime.now().replace(microsecond=0)
+    print('total elapsed time in hours:min:sec is', bb - aa)
