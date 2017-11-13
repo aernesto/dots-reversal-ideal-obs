@@ -125,14 +125,14 @@ def run_sde(cp_times, hazard, mm, trial_duration):
 
 if __name__ == "__main__":
     # name of SQLite db
-    dbname = 'test_2_true_2'
+    dbname = 'test_true_3'
     # create connection to SQLite db
     db = dataset.connect('sqlite:///' + dbname + '.db')
     # get handle for specific table of the db
     table = db['crossover']
     aa = datetime.datetime.now().replace(microsecond=0)
 
-    for row_id in range(80000):
+    for row_id in range(160000):
         duration, snr, h, seed = read_param(table, row_id + 1)
         m = .5 * snr**2
         # last = generate_cp(duration, seed, h)

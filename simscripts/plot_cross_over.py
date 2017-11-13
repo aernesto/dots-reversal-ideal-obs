@@ -68,7 +68,7 @@ def plot_cross_over(pair1, pair2, data, columnnames, fignum):
     plt.figure(fignum)
     plt.plot(x1, curve1, x2, curve2, linewidth=3.0)
     plt.xlim(0, 7)
-    plt.title('cross-over 500 trials per bin')
+    plt.title('cross-over 1000 trials per bin')
     plt.legend(['snr ' + str(pair1[0]) + '; h ' + str(pair1[1]),
                 'snr ' + str(pair2[0]) + '; h ' + str(pair2[1])])
     plt.xlabel('bin number, counting backward from end of trial')
@@ -78,7 +78,7 @@ def plot_cross_over(pair1, pair2, data, columnnames, fignum):
 
 if __name__ == "__main__":
     # name of SQLite db
-    dbname = 'test_2_true_2'
+    dbname = 'test_true_3'
     # create connection to SQLite db
     db = dataset.connect('sqlite:///' + dbname + '.db')
     # get handle for specific table of the db
