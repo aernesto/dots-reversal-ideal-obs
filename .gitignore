@@ -108,3 +108,6 @@ tests_adrian.ipynb
 database.yml
 *.db
 MATLAB_code/*
+*.png
+*.svg
+
