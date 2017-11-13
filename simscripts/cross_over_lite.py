@@ -125,7 +125,7 @@ def run_sde(cp_times, hazard, mm, trial_duration):
 
 if __name__ == "__main__":
     # name of SQLite db
-    dbname = 'test_true_2'
+    dbname = 'test_2_true_2'
     # create connection to SQLite db
     db = dataset.connect('sqlite:///' + dbname + '.db')
     # get handle for specific table of the db
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     for row_id in range(80000):
         duration, snr, h, seed = read_param(table, row_id + 1)
-        m = 2 * snr
+        m = .5 * snr**2
         # last = generate_cp(duration, seed, h)
         # print('row id', row_id + 1)
         # print('last cp', last[-1])

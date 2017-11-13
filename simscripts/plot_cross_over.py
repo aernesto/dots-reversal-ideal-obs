@@ -78,7 +78,7 @@ def plot_cross_over(pair1, pair2, data, columnnames, fignum):
 
 if __name__ == "__main__":
     # name of SQLite db
-    dbname = 'test_true_2'
+    dbname = 'test_2_true_2'
     # create connection to SQLite db
     db = dataset.connect('sqlite:///' + dbname + '.db')
     # get handle for specific table of the db
@@ -100,3 +100,7 @@ if __name__ == "__main__":
 
     plot_cross_over((1, 0.5), (1, 1.5), db, column_names, 1)
     plot_cross_over((2, 0.5), (2, 1.5), db, column_names, 2)
+    plot_cross_over((.5, 0.5), (.5, 1.5), db, column_names, 1)
+    plot_cross_over((2, 0.1), (2, 2), db, column_names, 2)
+    plot_cross_over((1, 0.1), (1, 2), db, column_names, 1)
+    plot_cross_over((.5, 0.1), (.5, 2), db, column_names, 2)
