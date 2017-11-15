@@ -19,3 +19,36 @@ Use the above to compute the percentage correct for each bin in each hazard
 rate and SNR condition.
 
 Generate cross-over curves for all pairs of hazard rate values, and all SNRs.
+
+------------------------------
+MODIFICATIONS TO INITIAL PLAN
+0/ Compute bootstrap confidence intervals
+1/ Produce full panel of curves, with standard y-range (0,1) and absolute time
+on x-axis.
+2/ For each curve, compute the cross-over score chi and present it in a table
+with columns: SNR, h1, h2, chi
+3/ re-run full sims for other parameter values
+
+
+--------
+|Suggestions from Kreso:
+--------
+Compute confidence intervals by bootstrapping
+
+--------
+|Comments from Zack on Slack:
+--------
+@adrian can you 
+
+- replot these, normalizing the axes? some span 0.6 and others 
+0.2. looks like the ones on the right give the best separation. 
+
+- also, we should think more about a good metric for quantifying the crossover 
+effect. e.g., negative product of the  differences on the left and right 
+boundary? this would be large and positive when one difference is large and 
+negative and the other large and positive.
+
+- also rather than plotting wrt bin number. can you plot wrt time?
+
+- can you go from here and do an even finer search of h and snr space? you 
+could increase the snr from 2. is snr=3 even better?
